@@ -91,6 +91,6 @@ urlpatterns = [
     ```
     - Install webpack(to bundle the package into one)and webpack-cli
     ```cmd
-    npm install webpack webpack-cli --save-dir
+    npm install webpack webpack-cli --save-dev
     ```
     - Install babel(to make js compatible in any browser by converting the language to compatible language (ex:ES6 to ES5))
