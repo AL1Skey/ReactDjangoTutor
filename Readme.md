@@ -82,7 +82,8 @@ urlpatterns = [
 
 # FrontEnd
 - ## Setup
-    -  Go to fronted directory and create static,src and templates
+    -  Go to frontend directory and create static,src and templates
+    -  Add frontend.api.FrontendConfig inside installed app on settings.py
     -  Inside static, create bundle(to store node package), css and images
     -  Inside src, create components(to store React Component)
     - Initialize node.js
@@ -94,3 +95,140 @@ urlpatterns = [
     npm install webpack webpack-cli --save-dev
     ```
     - Install babel(to make js compatible in any browser by converting the language to compatible language (ex:ES6 to ES5))
+    ```cmd
+    npm i @babel/core babel-loader @babel/preset-env @babel/preset-react --save-dev
+    npm i @babel/plugin-proposal-class-properties 
+    ```
+    - Install React
+    ```cmd
+    npm i react react-dom -save-dev react-router-dom
+    ```
+    - (optional) Install material-ui
+    ```cmd
+    npm install @mui/material @mui/styled-engine-sc styled-components
+    npm install @mui/icons-material
+    ```
+    - Create babel.config.json in frontend folder and write this
+    ```json
+    {
+    "presets": [
+        [
+            "@babel-presets-env",{
+                "target":{
+                    "node":10
+                }
+            }
+        ]
+    ],
+    "plugins": [
+        "@babel/plugin-proposal-class-properties"
+    ]   
+    }
+    ```
+    - Create webpack.config.js and use this code as configuration
+    ```js
+    const path = require("path");
+    const webpack = require("webpack");
+
+    module.exports = {
+    entry: "./src/index.js",
+    output: {
+        path: path.resolve(__dirname, "./static/bundle"),
+        filename: "[name].js",
+    },
+    module: {
+        rules: [
+        {
+            test: /\.js$/,
+            exclude: /node_modules/,
+            use: {
+            loader: "babel-loader",
+            },
+        },
+        ],
+    },
+    optimization: {
+        minimize: true,
+    },
+    plugins: [
+        new webpack.DefinePlugin({
+        "process.env": {
+            // This has effect on the react lib size
+            NODE_ENV: JSON.stringify("production"),
+        },
+        }),
+    ],
+    };
+    ```
+    - Create index.js inside src as entry-point
+    - Add this on package.json as shortcut to run webpack with npm
+    ```json
+    .....
+    "scripts": {
+    "dev": "webpack --mode development --watch",
+    "build": "webpack --mode production"
+    },
+    .....
+    ```
+    - Add html file inside frontend/templates/frontend as entry point for entry point on index.js and add this code
+    ```html
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        {% load static %}
+        <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+        <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+        <link rel="stylesheet" type="text/css" href="{% static 'css/index.css'%}" >
+        <title>React Django Project</title>
+    </head>
+    <body>
+        <div id="main">
+            <div id="app">
+                
+            </div>
+        </div>
+        <script src="{% static 'bundle/main.js' %}"></script>
+    </body>
+    </html>
+    ```
+    - Add this funtion on frontend/views.py
+    ```py
+    from django.shortcuts import render
+
+    # Create your views here.
+    def index(request, *args, **kwargs):
+        return render(request,'frontend/index.html')
+    ```
+    - Route the views function to urls and route the frontend urls to main project urls
+    - Create basic react view as testing water with this code below
+    ```js
+    import React, {Component} from "react";
+    import { render } from "react-dom";
+
+    export default class App extends Component {//Export this class as default and inherit Component class
+        constructor(props){//Make constructor
+            super(props);
+        }
+
+        render(){// Render the html code
+            return (
+                <div>
+                    <h1>Hello World!</h1>
+                </div>
+            );
+        }
+    }
+
+    render(<App />, document.getElementById("app"));// Link the react output to html tag with id of app
+    ```
+    - Add this code inside frontend/src/index.js to initialize react which is to be compressed and transpiloting by babel
+    ```js
+    import App from "./components/App";
+    ```
+    - Run webpack in watch mode with shortcut command according to script inside package.json
+    ```cmd
+    npm run dev        
+    ```
