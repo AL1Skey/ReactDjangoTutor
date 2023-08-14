@@ -232,3 +232,7 @@ urlpatterns = [
     ```cmd
     npm run dev        
     ```
+    - Open additional terminal and run server
+    ```cmd
+    pyton manage.py runserver
+    ```
