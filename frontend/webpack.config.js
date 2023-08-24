@@ -2,6 +2,7 @@ const path = require("path");
 const webpack = require("webpack");
 
 module.exports = {
+  cache: false,
   entry: "./src/index.js",
   output: {
     path: path.resolve(__dirname, "./static/bundle"),
@@ -10,10 +11,11 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.js$/,
-        exclude: /node_modules/,
-        use: {
-          loader: "babel-loader",
+        test: /\.js?$/,
+        loader: "babel-loader",
+        options: {
+          presets: ["@babel/preset-react"],
+          plugins: ["@emotion"],
         },
       },
     ],
